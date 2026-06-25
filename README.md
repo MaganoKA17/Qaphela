@@ -1,16 +1,36 @@
-# React + Vite
+# Qaphela
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-powered scam message analyzer build especially for South African users.
+Qaphela hels everyday people identify fraudulent WhatsApp and SMS messages before they cause harm, in plain language, with no technical knowledge required.
 
-Currently, two official plugins are available:
+# Problem
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+South Africa has one of the highesat rates of digital fraud in the world. WhatsApp is used by over 90% of South Africans with smartphones, amking it the most effective scam distribution channel in th country.
 
-## React Compiler
+Fraudsters impersonate trused institutions, such as SASSA, fnb, Capitec, ABSA, SARS, Takealot, to steal money, credentials, and personal information.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Most victim, especially the elderly and low-income users, cannot tell a real message from a fake one. Existing tools like spam filters are desighned for volume-based noise, not intent-based fraud. There is not accessible , locally aware tool buuilt around SOuth Africa's specific scam landscape.
 
-## Expanding the ESLint configuration
+Qaphela fills the gap.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# What It Does
+
+A user recieves a suspicious message and isn't sure if its legitimate. They paste it into Qaphela. Within seconds, the app:
+
+- Extracts threat signals: urgency language, brand impersination, requests for personal information, unrealistic prize offers.
+
+- Checks any URLs against VirusTotal's threat intelligence database (70+ security vendors)
+- Calculates a risk score from weighted signals (0-100)
+- Generates a plain langauge explaination via AI, telling the user what was found and what to do next.
+- Logs the message anonymously to a community scam feed, building a live database of SA-specific scam patterns
+
+# Features
+
+- Scam Analyzer 
+- Risk Scoring Engine
+- URL Reputation Check
+- AI Explanation Layer
+- Community Scam Feed
+- SA-Specific Signal Detection
+
+# Tech Stack

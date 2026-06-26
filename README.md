@@ -4,7 +4,10 @@
 An AI-powered scam message analyzer build especially for South African users.
 Qaphela hels everyday people identify fraudulent WhatsApp and SMS messages before they cause harm, in plain language, with no technical knowledge required.
 
-## Problem
+---
+
+
+## The Problem
 
 South Africa has one of the highesat rates of digital fraud in the world. WhatsApp is used by over 90% of South Africans with smartphones, amking it the most effective scam distribution channel in th country.
 
@@ -13,6 +16,9 @@ Fraudsters impersonate trused institutions, such as SASSA, fnb, Capitec, ABSA, S
 Most victims, especially the elderly and low-income users, cannot tell a real message from a fake one. Existing tools like spam filters are designed for volume-based noise, not intent-based fraud. There is no accessible, locally aware tool built around SOuth Africa's specific scam landscape.
 
 Qaphela fills the gap.
+
+---
+
 
 # What It Does
 
@@ -25,6 +31,9 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 - **Generates a plain langauge explaination** via AI, telling the user what was found and what to do next.
 - **Logs the message anonymously** to a community scam feed, building a live database of SA-specific scam patterns
 
+---
+
+
 ## Features
 
 - **Scam Analyzer** - paste any suspicious message and get an instant risk assesment 
@@ -33,6 +42,9 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 - **AI Explanation Layer** - Groq (LLama 3.1) translates technical findings into plain langauage for non-technical users
 - **Community Scam Feed** - anonymously logged reports building a growning SA-specific threat database
 - **SA-Specific Signal Detection** - patterns tuned to mloacal brands, government entities, and known fraud templates
+
+---
+
 
 # Tech Stack
 | Layer | Technology |
@@ -43,6 +55,9 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 | AI | Groq AI (LLama 3.1-8b-instant)|
 | Threat Intelligence | VirusTotal API |
 | Routing | React Router DOM |
+
+---
+
 
 ## Project Structure
 
@@ -69,6 +84,9 @@ qaphela/
 └── package.json
 ```
 
+---
+
+
 ## Risk Scoring Model
 Qaphela uses a weighted signal system to calculate a risk score between 0 and 100:
 
@@ -87,6 +105,9 @@ Scores are capped at 100 and categorised as:
 - **Medium**(40-69): Proceed with caution
 - **High**(70-100): Likely a scam, do not engage
 
+---
+
+
 ## Cybersecurity Concepts Demonstarted
 
 - **Indicator of Comrpmise (IoC) lookup** via VirusTotal API
@@ -95,6 +116,9 @@ Scores are capped at 100 and categorised as:
 - **Risk scoring model** - weighted, deterministic signal aggregation
 - **Community threat intelligence feed** - anonymous. crowd-sourced scam database
 - **privacy-by-design** - no PII stored, RLS enforced on all database tables
+
+---
+
 
 ## Getting Started
 
@@ -166,10 +190,16 @@ npx supabase functions deploy analyze-message
 npm run dev
 ```
 
+---
+
+
 ## Disclaimer
 
 Qaphela is a portfolio project built for educational purposes. it is not a substitute for professional cyber security advice. If you believe you have been a victim of fraud, contanct your bank immediately and report to the South African Police Service (SAPS) or the South AFrican Banking risk Information Centre (SABRIC).
 
+---
+
+
 ## Author
 
-Kgosi-E-tsile Magano
+**Kgosi-E-tsile Magano**

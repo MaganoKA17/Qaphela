@@ -87,8 +87,8 @@ serve(async (req) => {
     const riskLevel = score >= 70 ? "high" : score >= 40 ? "medium" : "low"
 
     // ---- AI EXPLANATION ----
-    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY")
-    const prompt = `You are a cybersecurity assistant helping everyday South Africans identify scam messages.
+const groqKey = Deno.env.get("GROQ_API_KEY")
+const prompt = `You are a cybersecurity assistant helping everyday South Africans identify scam messages.
 
 A message was analyzed and the following was found:
 - Risk score: ${score}/100
@@ -103,22 +103,21 @@ Write a plain-language explanation (3-4 sentences) for a non-technical South Afr
 
 Do not use technical jargon. Be direct and clear.`
 
-    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 300,
-        messages: [{ role: "user", content: prompt }]
-      })
-    })
+const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${groqKey}`
+  },
+  body: JSON.stringify({
+    model: "llama-3.1-8b-instant",
+    max_tokens: 300,
+    messages: [{ role: "user", content: prompt }]
+  })
+})
 
-    const aiData = await aiRes.json()
-    const explanation = aiData.content[0].text
+const aiData = await aiRes.json()
+const explanation = aiData.choices[0].message.content
 
     return new Response(JSON.stringify({
       score,

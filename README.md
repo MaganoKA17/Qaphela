@@ -1,5 +1,6 @@
 # Qaphela
 > *qaphela . isiZulu . "beware"*
+
 An AI-powered scam message analyzer build especially for South African users.
 Qaphela hels everyday people identify fraudulent WhatsApp and SMS messages before they cause harm, in plain language, with no technical knowledge required.
 

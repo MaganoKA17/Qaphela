@@ -21,13 +21,17 @@ export default function Analyzer(){
             })
             if (fnError) throw fnError
 
-            await supabase.from('scam_reports').insert({
-                message_text: message,
-                risk_score: data.score,
-                risk_level: data.riskLevel,
-                signals: data.signals,
-                ai_explanation: data.explanation
-            })
+            const { error: insertError } = await supabase.from('scam_reports').insert({
+  message_text: message,
+  risk_score: data.score,
+  risk_level: data.riskLevel,
+  signals: data.signals,
+  ai_explanation: data.explanation
+})
+
+if (insertError) {
+  console.error('Insert error:', insertError)
+}
             setResult(data)
         } catch(err){
             setError("Something went wrong. Please try again.")

@@ -12,12 +12,12 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json()
+    console.log("Message received:", message)
 
     // ---- SIGNAL EXTRACTION ----
     const signals = []
     let score = 0
 
-    // Urgency language
     const urgencyPatterns = [
       /urgent/i, /immediately/i, /account.*suspend/i,
       /verify.*now/i, /24 hours/i, /act now/i, /expires/i
@@ -27,7 +27,6 @@ serve(async (req) => {
       score += 20
     }
 
-    // SA brand impersonation
     const brandPatterns = [
       /sassa/i, /fnb/i, /absa/i, /capitec/i, /nedbank/i,
       /standard bank/i, /vodacom/i, /mtn/i, /takealot/i,
@@ -38,7 +37,6 @@ serve(async (req) => {
       score += 25
     }
 
-    // Requests for personal info
     const personalInfoPatterns = [
       /id number/i, /password/i, /pin/i, /otp/i,
       /bank.*detail/i, /account.*number/i, /verify.*identity/i
@@ -48,7 +46,6 @@ serve(async (req) => {
       score += 30
     }
 
-    // Too good to be true
     const prizePatterns = [
       /you.*won/i, /winner/i, /prize/i, /voucher/i,
       /free.*money/i, /grant.*approved/i, /selected/i
@@ -58,16 +55,18 @@ serve(async (req) => {
       score += 20
     }
 
-    // URL extraction
     const urlMatch = message.match(/https?:\/\/[^\s]+/)
     let urlFlag = null
     if (urlMatch) {
       const url = urlMatch[0]
+      console.log("URL found:", url)
       const vtKey = Deno.env.get("VIRUSTOTAL_API_KEY")
+      console.log("VirusTotal key present:", !!vtKey)
       const encoded = btoa(url).replace(/=+$/, "")
       const vtRes = await fetch(`https://www.virustotal.com/api/v3/urls/${encoded}`, {
         headers: { "x-apikey": vtKey }
       })
+      console.log("VirusTotal status:", vtRes.status)
       const vtData = await vtRes.json()
       const malicious = vtData?.data?.attributes?.last_analysis_stats?.malicious ?? 0
       if (malicious > 0) {
@@ -80,15 +79,14 @@ serve(async (req) => {
       }
     }
 
-    // Cap score at 100
     score = Math.min(score, 100)
-
-    // Risk level
     const riskLevel = score >= 70 ? "high" : score >= 40 ? "medium" : "low"
+    console.log("Score:", score, "Risk level:", riskLevel)
 
-    // ---- AI EXPLANATION ----
-const groqKey = Deno.env.get("GROQ_API_KEY")
-const prompt = `You are a cybersecurity assistant helping everyday South Africans identify scam messages.
+    const groqKey = Deno.env.get("GROQ_API_KEY")
+    console.log("Groq key present:", !!groqKey)
+
+    const prompt = `You are a cybersecurity assistant helping everyday South Africans identify scam messages.
 
 A message was analyzed and the following was found:
 - Risk score: ${score}/100
@@ -103,21 +101,23 @@ Write a plain-language explanation (3-4 sentences) for a non-technical South Afr
 
 Do not use technical jargon. Be direct and clear.`
 
-const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${groqKey}`
-  },
-  body: JSON.stringify({
-    model: "llama-3.1-8b-instant",
-    max_tokens: 300,
-    messages: [{ role: "user", content: prompt }]
-  })
-})
+    const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        max_tokens: 300,
+        messages: [{ role: "user", content: prompt }]
+      })
+    })
 
-const aiData = await aiRes.json()
-const explanation = aiData.choices[0].message.content
+    console.log("Groq status:", aiRes.status)
+    const aiData = await aiRes.json()
+    console.log("Groq response:", JSON.stringify(aiData))
+    const explanation = aiData.choices[0].message.content
 
     return new Response(JSON.stringify({
       score,
@@ -129,6 +129,7 @@ const explanation = aiData.choices[0].message.content
     })
 
   } catch (err) {
+    console.error("Edge function error:", err.message)
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }

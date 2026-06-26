@@ -34,3 +34,32 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 - SA-Specific Signal Detection
 
 # Tech Stack
+| Layer | Technology |
+|---|---|
+| Frontend | React(Vite) + Tailwind CSS |
+| Backend | Supabase Edge Functions (Deno) |
+| Database | Supabase (PostgreSQL + RLS) |
+| AI | Groq AI |
+| Threat Intelligence | VirusTotal API |
+| Routing | React Router DOM |
+
+# Project Structure
+
+# Risk Scoring Model
+Qaphela uses a weighted signal system to calculate a risk score between 0 and 100:
+
+| Signal | Weight | 
+|---|---|
+| Urgency Language | +20 |
+| SA brand / government impersonation | +25 |
+| Request for personal or financial information | +30 |
+| Unrealistic reward or prize offer | +20 |
+| URL flagged as malicious by VirusTotal | +40 |
+| URL present but not flagged | +5 |
+
+Scores are capped at 100 and categorised as:
+
+- Low(0-39): Unlikely to be a scam
+- Medium(40-69): Proceed with caution
+- High(70-100): Likely a scam, do not engage
+

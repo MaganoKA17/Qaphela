@@ -1,3 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
 @tailwind base;
-@tailwind compnents;
+@tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-base: #0A0A0F;
+  --bg-card: #1A1A24;
+  --bg-elevated: #252535;
+  --text-primary: #E8E8F0;
+  --text-muted: #6B6B80;
+  --text-subtle: #3D3D50;
+  --accent: #F5C518;
+  --accent-dim: #F5C51820;
+  --border: #1F1F2E;
+  --border-subtle: #14141E;
+  --red: #FF4444;
+  --red-dim: #FF444415;
+  --green: #22C55E;
+  --green-dim: #22C55E15;
+  --amber: #F5C518;
+  --amber-dim: #F5C51815;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Scanning animation for risk score */
+@keyframes scan {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: var(--accent); }
+  50% { border-color: transparent; }
+}
+
+.scan-in {
+  animation: scan 0.4s ease forwards;
+}
+
+.analyzing-border {
+  animation: pulse-border 1s ease infinite;
+}
+
+/* Progress bar fill */
+@keyframes fill {
+  from { width: 0%; }
+}
+
+.progress-fill {
+  animation: fill 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

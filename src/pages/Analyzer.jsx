@@ -1,110 +1,281 @@
-import { useState } from "react"
-import {supabase } from "../lib/supabase"
-import RiskBadge from "../components/RiskBadge"
-import SignalList from "../components/SignalList"
+import { useState } from 'react'
+import { supabase } from '../lib/supabase'
+import RiskBadge from '../components/RiskBadge'
+import SignalList from '../components/SignalList'
 
-export default function Analyzer(){
-    const [message, setMessage] = useState('')
-    const [result, setResult] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
-    
-    async function analyze() {
-        if (!message.trim()) return
-        setLoading(true)
-        setError(null)
-        setResult(null)
+export default function Analyzer() {
+  const [message, setMessage] = useState('')
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [scored, setScored] = useState(false)
 
-        try {
-            const { data, error: fnError} = await supabase.functions.invoke("analyze-message",{
-                body: { message }
-            })
-            if (fnError) throw fnError
+  async function analyze() {
+    if (!message.trim()) return
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    setScored(false)
 
-            const { error: insertError } = await supabase.from('scam_reports').insert({
-  message_text: message,
-  risk_score: data.score,
-  risk_level: data.riskLevel,
-  signals: data.signals,
-  ai_explanation: data.explanation
-})
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('analyze-message', {
+        body: { message }
+      })
+      if (fnError) throw fnError
 
-if (insertError) {
-  console.error('Insert error:', insertError)
-}
-            setResult(data)
-        } catch(err){
-            setError("Something went wrong. Please try again.")
-            console.error(err)
-        } finally {
-            setLoading(false)
-        }
+      const { error: insertError } = await supabase.from('scam_reports').insert({
+        message_text: message,
+        risk_score: data.score,
+        risk_level: data.riskLevel,
+        signals: data.signals,
+        ai_explanation: data.explanation
+      })
+      if (insertError) console.error('Insert error:', insertError)
+
+      setResult(data)
+      setTimeout(() => setScored(true), 100)
+    } catch (err) {
+      setError('Analysis failed. Please try again.')
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
+  }
 
-     return (
-    <main className="max-w-2xl mx-auto px-6 py-12">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold mb-2">Scam Analyzer</h1>
-        <p className="text-gray-400">
-          Paste a suspicious WhatsApp message or SMS below and Qaphela will analyze it for scam signals.
+  const scoreColor = result
+    ? result.riskLevel === 'high' ? 'var(--red)'
+    : result.riskLevel === 'medium' ? 'var(--amber)'
+    : 'var(--green)'
+    : 'var(--text-muted)'
+
+  return (
+    <main style={{ maxWidth: '680px', margin: '0 auto', padding: '3rem 2rem' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          fontSize: '11px', fontFamily: 'JetBrains Mono, monospace',
+          color: 'var(--accent)', letterSpacing: '0.08em',
+          textTransform: 'uppercase', marginBottom: '1rem',
+          padding: '4px 10px', background: 'var(--accent-dim)',
+          borderRadius: '4px', border: '1px solid var(--accent)30',
+        }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+          Threat Analysis
+        </div>
+        <h1 style={{
+          fontSize: '2rem', fontWeight: 700, margin: '0 0 0.5rem',
+          letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1.2,
+        }}>
+          Scam Message Analyzer
+        </h1>
+        <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
+          Paste a suspicious WhatsApp or SMS message. Qaphela will check it for known South African scam patterns and threat signals.
         </p>
       </div>
 
-      <div className="mb-4">
+      {/* Input area */}
+      <div style={{
+        border: `1px solid ${loading ? 'var(--accent)' : 'var(--border)'}`,
+        borderRadius: '12px',
+        overflow: 'hidden',
+        transition: 'border-color 0.2s ease',
+        marginBottom: '1rem',
+      }}>
+        <div style={{
+          padding: '8px 14px',
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-card)',
+          display: 'flex', alignItems: 'center', gap: '8px',
+        }}>
+          <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
+            MESSAGE INPUT
+          </span>
+          {message.length > 0 && (
+            <span style={{ fontSize: '10px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-subtle)', marginLeft: 'auto' }}>
+              {message.length} chars
+            </span>
+          )}
+        </div>
         <textarea
-          className="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-sm text-white placeholder-gray-500 resize-none focus:outline-none focus:border-yellow-400 transition-colors"
-          rows={6}
+          style={{
+            width: '100%',
+            minHeight: '160px',
+            background: 'var(--bg-card)',
+            border: 'none',
+            outline: 'none',
+            padding: '1rem',
+            fontSize: '14px',
+            color: 'var(--text-primary)',
+            fontFamily: 'Inter, sans-serif',
+            resize: 'vertical',
+            lineHeight: 1.6,
+          }}
           placeholder="Paste your suspicious message here..."
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
       </div>
 
+      {/* Analyze button */}
       <button
         onClick={analyze}
         disabled={loading || !message.trim()}
-        className="w-full bg-yellow-400 text-gray-950 font-semibold py-3 rounded-lg hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        style={{
+          width: '100%',
+          padding: '14px',
+          background: loading || !message.trim() ? 'var(--bg-elevated)' : 'var(--accent)',
+          color: loading || !message.trim() ? 'var(--text-muted)' : '#0A0A0F',
+          border: 'none',
+          borderRadius: '10px',
+          fontSize: '14px',
+          fontWeight: 600,
+          cursor: loading || !message.trim() ? 'not-allowed' : 'pointer',
+          transition: 'all 0.15s ease',
+          fontFamily: 'Inter, sans-serif',
+          letterSpacing: '0.01em',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+        }}
       >
-        {loading ? 'Analyzing...' : 'Analyze Message'}
+        {loading ? (
+          <>
+            <span style={{
+              width: '14px', height: '14px',
+              border: '2px solid var(--text-muted)',
+              borderTopColor: 'var(--accent)',
+              borderRadius: '50%',
+              display: 'inline-block',
+              animation: 'spin 0.7s linear infinite',
+            }} />
+            Analyzing message...
+          </>
+        ) : 'Analyze Message'}
       </button>
 
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {/* Error */}
       {error && (
-        <div className="mt-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-400 text-sm">
+        <div style={{
+          marginTop: '1rem',
+          padding: '12px 16px',
+          background: 'var(--red-dim)',
+          border: '1px solid var(--red)30',
+          borderRadius: '8px',
+          fontSize: '13px',
+          color: 'var(--red)',
+        }}>
           {error}
         </div>
       )}
 
+      {/* Results */}
       {result && (
-        <div className="mt-8 space-y-6">
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg">Risk Score</h2>
+        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }} className="scan-in">
+
+          {/* Score card */}
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '10px 16px',
+              borderBottom: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Risk Assessment
+              </span>
               <RiskBadge level={result.riskLevel} />
             </div>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-5xl font-bold">{result.score}</span>
-              <span className="text-gray-500 mb-1">/100</span>
-            </div>
-            <div className="w-full bg-gray-800 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all ${
-                  result.riskLevel === 'high' ? 'bg-red-500' :
-                  result.riskLevel === 'medium' ? 'bg-yellow-400' : 'bg-green-500'
-                }`}
-                style={{ width: `${result.score}%` }}
-              />
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', marginBottom: '1.25rem' }}>
+                <span style={{
+                  fontSize: '4rem', fontWeight: 700,
+                  fontFamily: 'JetBrains Mono, monospace',
+                  color: scoreColor,
+                  lineHeight: 1,
+                  letterSpacing: '-0.04em',
+                }}>
+                  {result.score}
+                </span>
+                <span style={{ fontSize: '1.5rem', color: 'var(--text-subtle)', fontFamily: 'JetBrains Mono, monospace', marginBottom: '6px' }}>
+                  /100
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div style={{ height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
+                <div
+                  className="progress-fill"
+                  style={{
+                    height: '100%',
+                    width: scored ? `${result.score}%` : '0%',
+                    background: scoreColor,
+                    borderRadius: '2px',
+                    boxShadow: `0 0 12px ${scoreColor}80`,
+                    transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+                <span style={{ fontSize: '10px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--green)' }}>LOW</span>
+                <span style={{ fontSize: '10px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--amber)' }}>MEDIUM</span>
+                <span style={{ fontSize: '10px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--red)' }}>HIGH</span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <h2 className="font-semibold text-lg mb-3">What this means</h2>
-            <p className="text-gray-300 text-sm leading-relaxed">{result.explanation}</p>
+          {/* AI explanation */}
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '10px 16px',
+              borderBottom: '1px solid var(--border)',
+            }}>
+              <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                AI Analysis
+              </span>
+            </div>
+            <div style={{ padding: '1.25rem 1.5rem' }}>
+              <p style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.75, margin: 0 }}>
+                {result.explanation}
+              </p>
+            </div>
           </div>
 
+          {/* Signals */}
           {result.signals.length > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-              <h2 className="font-semibold text-lg mb-3">Signals detected</h2>
-              <SignalList signals={result.signals} />
+            <div style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                padding: '10px 16px',
+                borderBottom: '1px solid var(--border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                  Signals Detected
+                </span>
+                <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--accent)' }}>
+                  {result.signals.length} found
+                </span>
+              </div>
+              <div style={{ padding: '1rem' }}>
+                <SignalList signals={result.signals} />
+              </div>
             </div>
           )}
         </div>

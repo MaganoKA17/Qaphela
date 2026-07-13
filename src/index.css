@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+[data-theme="dark"] {
   --bg-base: #0A0A0F;
   --bg-card: #1A1A24;
   --bg-elevated: #252535;
@@ -23,6 +23,26 @@
   --amber-dim: #F5C51815;
 }
 
+[data-theme="light"] {
+  --bg-base: #F0F0F5;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #E4E4EC;
+  --text-primary: #0A0A0F;
+  --text-muted: #4A4A60;
+  --text-subtle: #9090A8;
+  --accent: #A07800;
+  --accent-dim: #A0780015;
+  --border: #D0D0DF;
+  --border-subtle: #E4E4EC;
+  --red: #B91C1C;
+  --red-dim: #B91C1C12;
+  --green: #15803D;
+  --green-dim: #15803D12;
+  --amber: #A07800;
+  --amber-dim: #A0780012;
+}
+
+
 * { box-sizing: border-box; }
 
 body {
@@ -31,6 +51,12 @@ body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background-color: var(--bg-base);
 }
 
 .mono { font-family: 'JetBrains Mono', monospace; }

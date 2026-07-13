@@ -126,7 +126,7 @@ export default function Analyzer() {
           width: '100%',
           padding: '14px',
           background: loading || !message.trim() ? 'var(--bg-elevated)' : 'var(--accent)',
-          color: loading || !message.trim() ? 'var(--text-muted)' : '#0A0A0F',
+          color: loading || !message.trim() ? 'var(--text-muted)' : 'var(--bg-base)',
           border: 'none',
           borderRadius: '10px',
           fontSize: '14px',

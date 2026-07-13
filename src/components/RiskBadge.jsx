@@ -1,8 +1,8 @@
 export default function RiskBadge({ level }) {
   const config = {
-    high: { label: 'High Risk', color: 'var(--red)', bg: 'var(--red-dim)', dot: '#FF4444' },
-    medium: { label: 'Medium Risk', color: 'var(--amber)', bg: 'var(--amber-dim)', dot: '#F5C518' },
-    low: { label: 'Low Risk', color: 'var(--green)', bg: 'var(--green-dim)', dot: '#22C55E' },
+    high: { label: 'High Risk', color: 'var(--red)', bg: 'var(--red-dim)', dot: 'var(--red)' },
+    medium: { label: 'Medium Risk', color: 'var(--amber)', bg: 'var(--amber-dim)', dot: 'var(--amber)' },
+    low: { label: 'Low Risk', color: 'var(--green)', bg: 'var(--green-dim)', dot: 'var(--green)' },
   }
   const c = config[level] || config.low
 

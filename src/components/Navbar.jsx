@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
 
 export default function Navbar() {
   const { pathname } = useLocation()
+  const { theme, toggleTheme } = useTheme()
 
   const links = [
     { to: '/', label: 'Analyzer' },
@@ -19,9 +21,10 @@ export default function Navbar() {
       justifyContent: 'space-between',
       position: 'sticky',
       top: 0,
-      background: 'rgba(10,10,15,0.92)',
+      background: theme === 'dark' ? 'rgba(10,10,15,0.92)' : 'rgba(245,245,248,0.92)',
       backdropFilter: 'blur(12px)',
       zIndex: 50,
+      transition: 'background 0.2s ease',
     }}>
       {/* Logo */}
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -31,7 +34,7 @@ export default function Navbar() {
           borderRadius: '6px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <span style={{ fontSize: '14px', fontWeight: 700, color: '#0A0A0F' }}>Q</span>
+         <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--bg-base)' }}>Q</span>
         </div>
         <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
           Qaphela
@@ -47,8 +50,8 @@ export default function Navbar() {
         </span>
       </Link>
 
-      {/* Links */}
       <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        {/* Nav links */}
         {links.map(link => (
           <Link
             key={link.to}
@@ -65,6 +68,34 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          style={{
+            width: '34px', height: '34px',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--bg-elevated)',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '15px',
+            transition: 'all 0.15s ease',
+            flexShrink: 0,
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = 'var(--accent)'
+            e.currentTarget.style.color = 'var(--accent)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'var(--border)'
+            e.currentTarget.style.color = 'var(--text-muted)'
+          }}
+        >
+          {theme === 'dark' ? '☀' : '☾'}
+        </button>
       </div>
     </nav>
   )

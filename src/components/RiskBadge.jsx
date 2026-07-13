@@ -1,14 +1,34 @@
 export default function RiskBadge({ level }) {
-  const styles = {
-    high: 'bg-red-900/40 text-red-400 border-red-700',
-    medium: 'bg-yellow-900/40 text-yellow-400 border-yellow-700',
-    low: 'bg-green-900/40 text-green-400 border-green-700',
+  const config = {
+    high: { label: 'High Risk', color: 'var(--red)', bg: 'var(--red-dim)', dot: '#FF4444' },
+    medium: { label: 'Medium Risk', color: 'var(--amber)', bg: 'var(--amber-dim)', dot: '#F5C518' },
+    low: { label: 'Low Risk', color: 'var(--green)', bg: 'var(--green-dim)', dot: '#22C55E' },
   }
-  const labels = { high: '🔴 High Risk', medium: '🟡 Medium Risk', low: '🟢 Low Risk' }
+  const c = config[level] || config.low
 
   return (
-    <span className={`text-xs font-medium px-3 py-1 rounded-full border ${styles[level]}`}>
-      {labels[level]}
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      padding: '4px 10px',
+      borderRadius: '999px',
+      background: c.bg,
+      border: `1px solid ${c.color}30`,
+      fontSize: '11px',
+      fontWeight: 500,
+      color: c.color,
+      fontFamily: 'JetBrains Mono, monospace',
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+    }}>
+      <span style={{
+        width: '5px', height: '5px',
+        borderRadius: '50%',
+        background: c.dot,
+        boxShadow: `0 0 6px ${c.dot}`,
+      }} />
+      {c.label}
     </span>
   )
 }

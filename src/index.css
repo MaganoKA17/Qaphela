@@ -4,6 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
+[data-theme="light"] {
+  --bg-base: #EEEEF5;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #E4E4EF;
+  --text-primary: #0A0A0F;
+  --text-muted: #4A4A60;
+  --text-subtle: #9090A8;
+  --accent: #A07800;
+  --accent-dim: #A0780015;
+  --border: #C8C8DC;
+  --border-subtle: #DCDCEC;
+  --red: #B91C1C;
+  --red-dim: #B91C1C12;
+  --green: #15803D;
+  --green-dim: #15803D12;
+  --amber: #A07800;
+  --amber-dim: #A0780012;
+  --card-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+
 [data-theme="dark"] {
   --bg-base: #0A0A0F;
   --bg-card: #1A1A24;
@@ -21,25 +41,7 @@
   --green-dim: #22C55E15;
   --amber: #F5C518;
   --amber-dim: #F5C51815;
-}
-
-[data-theme="light"] {
-  --bg-base: #F0F0F5;
-  --bg-card: #FFFFFF;
-  --bg-elevated: #E4E4EC;
-  --text-primary: #0A0A0F;
-  --text-muted: #4A4A60;
-  --text-subtle: #9090A8;
-  --accent: #A07800;
-  --accent-dim: #A0780015;
-  --border: #D0D0DF;
-  --border-subtle: #E4E4EC;
-  --red: #B91C1C;
-  --red-dim: #B91C1C12;
-  --green: #15803D;
-  --green-dim: #15803D12;
-  --amber: #A07800;
-  --amber-dim: #A0780012;
+  --card-shadow: none;
 }
 
 

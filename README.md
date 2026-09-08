@@ -199,7 +199,9 @@ Qaphela is a portfolio project built for educational purposes. it is not a subst
 
 ---
 
-
 ## Author
 
 **Kgosi-E-tsile Magano**
+
+## Verification Code
+WTC-2Y5NS9AS

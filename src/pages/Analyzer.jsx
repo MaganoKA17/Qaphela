@@ -58,7 +58,7 @@ export default function Analyzer() {
           color: 'var(--accent)', letterSpacing: '0.08em',
           textTransform: 'uppercase', marginBottom: '1rem',
           padding: '4px 10px', background: 'var(--accent-dim)',
-          borderRadius: '4px', border: '1px solid var(--accent)30',
+          borderRadius: '4px', border: '1px solid var(--accent)',
         }}>
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
           Threat Analysis
@@ -81,11 +81,13 @@ export default function Analyzer() {
         overflow: 'hidden',
         transition: 'border-color 0.2s ease',
         marginBottom: '1rem',
+        background: 'var(--bg-card)',
+        boxShadow: 'var(--card-shadow)',
       }}>
         <div style={{
           padding: '8px 14px',
           borderBottom: '1px solid var(--border)',
-          background: 'var(--bg-card)',
+          background: 'var(--bg-elevated)',
           display: 'flex', alignItems: 'center', gap: '8px',
         }}>
           <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
@@ -117,33 +119,29 @@ export default function Analyzer() {
         />
       </div>
 
+      {/* Consent notice */}
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: '10px',
+        padding: '12px 14px',
+        background: 'var(--accent-dim)',
+        border: '1px solid var(--accent)',
+        borderRadius: '8px',
+        marginBottom: '1rem',
+      }}>
+        <span style={{ fontSize: '14px', flexShrink: 0 }}>🔒</span>
+        <p style={{
+          fontSize: '12px', color: 'var(--text-muted)',
+          margin: 0, lineHeight: 1.6,
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          Your message is analyzed and immediately discarded. Only the risk score,
+          detected signals, and AI explanation are stored anonymously — never the message
+          content itself. No personal information is retained.
+        </p>
+      </div>
+
       {/* Analyze button */}
       <button
-
-      {/* Consent notice */}
-  <div style={{
-    display: 'flex', alignItems: 'flex-start', gap: '10px',
-    padding: '12px 14px',
-    background: 'var(--accent-dim)',
-    border: '1px solid var(--accent)',
-    borderRadius: '8px',
-    marginBottom: '1rem',
-  }}>
-    <span style={{ fontSize: '14px', flexShrink: 0 }}>🔒</span>
-    <p style={{
-      fontSize: '12px', color: 'var(--text-muted)',
-      margin: 0, lineHeight: 1.6,
-      fontFamily: 'Inter, sans-serif',
-    }}>
-      Your message is analyzed locally and immediately discarded. Only the risk score,
-      detected signals, and AI explanation are stored anonymously — never the message content itself.
-      No personal information is retained.
-    </p>
-  </div>
-
-{/* Analyze button */}
-<button
-
         onClick={analyze}
         disabled={loading || !message.trim()}
         style={{
@@ -151,7 +149,8 @@ export default function Analyzer() {
           padding: '14px',
           background: loading || !message.trim() ? 'var(--bg-elevated)' : 'var(--accent)',
           color: loading || !message.trim() ? 'var(--text-muted)' : 'var(--bg-base)',
-          border: 'none',
+          border: '1px solid',
+          borderColor: loading || !message.trim() ? 'var(--border)' : 'var(--accent)',
           borderRadius: '10px',
           fontSize: '14px',
           fontWeight: 600,
@@ -163,6 +162,7 @@ export default function Analyzer() {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
+          boxShadow: loading || !message.trim() ? 'none' : 'var(--card-shadow)',
         }}
       >
         {loading ? (
@@ -188,7 +188,7 @@ export default function Analyzer() {
           marginTop: '1rem',
           padding: '12px 16px',
           background: 'var(--red-dim)',
-          border: '1px solid var(--red)30',
+          border: '1px solid var(--red)',
           borderRadius: '8px',
           fontSize: '13px',
           color: 'var(--red)',
@@ -207,11 +207,13 @@ export default function Analyzer() {
             border: '1px solid var(--border)',
             borderRadius: '12px',
             overflow: 'hidden',
+            boxShadow: 'var(--card-shadow)',
           }}>
             <div style={{
               padding: '10px 16px',
               borderBottom: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'var(--bg-elevated)',
             }}>
               <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 Risk Assessment
@@ -223,8 +225,7 @@ export default function Analyzer() {
                 <span style={{
                   fontSize: '4rem', fontWeight: 700,
                   fontFamily: 'JetBrains Mono, monospace',
-                  color: scoreColor,
-                  lineHeight: 1,
+                  color: scoreColor, lineHeight: 1,
                   letterSpacing: '-0.04em',
                 }}>
                   {result.score}
@@ -233,19 +234,15 @@ export default function Analyzer() {
                   /100
                 </span>
               </div>
-              {/* Progress bar */}
               <div style={{ height: '4px', background: 'var(--bg-base)', borderRadius: '2px', overflow: 'hidden' }}>
-                <div
-                  className="progress-fill"
-                  style={{
-                    height: '100%',
-                    width: scored ? `${result.score}%` : '0%',
-                    background: scoreColor,
-                    borderRadius: '2px',
-                    boxShadow: `0 0 12px ${scoreColor}80`,
-                    transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
-                  }}
-                />
+                <div style={{
+                  height: '100%',
+                  width: scored ? `${result.score}%` : '0%',
+                  background: scoreColor,
+                  borderRadius: '2px',
+                  boxShadow: `0 0 12px ${scoreColor}80`,
+                  transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+                }} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
                 <span style={{ fontSize: '10px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--green)' }}>LOW</span>
@@ -261,10 +258,12 @@ export default function Analyzer() {
             border: '1px solid var(--border)',
             borderRadius: '12px',
             overflow: 'hidden',
+            boxShadow: 'var(--card-shadow)',
           }}>
             <div style={{
               padding: '10px 16px',
               borderBottom: '1px solid var(--border)',
+              background: 'var(--bg-elevated)',
             }}>
               <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 AI Analysis
@@ -284,16 +283,23 @@ export default function Analyzer() {
               border: '1px solid var(--border)',
               borderRadius: '12px',
               overflow: 'hidden',
+              boxShadow: 'var(--card-shadow)',
             }}>
               <div style={{
                 padding: '10px 16px',
                 borderBottom: '1px solid var(--border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'var(--bg-elevated)',
               }}>
                 <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Signals Detected
                 </span>
-                <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', color: 'var(--accent)' }}>
+                <span style={{
+                  fontSize: '11px', fontFamily: 'JetBrains Mono, monospace',
+                  color: 'var(--accent)', background: 'var(--accent-dim)',
+                  padding: '2px 8px', borderRadius: '4px',
+                  border: '1px solid var(--accent)',
+                }}>
                   {result.signals.length} found
                 </span>
               </div>

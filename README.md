@@ -2,10 +2,9 @@
 > *qaphela . isiZulu . "beware"*
 
 An AI-powered scam message analyzer build especially for South African users.
-Qaphela hels everyday people identify fraudulent WhatsApp and SMS messages before they cause harm, in plain language, with no technical knowledge required.
+Qaphela helps everyday people identify fraudulent WhatsApp and SMS messages before they cause harm, in plain language, with no technical knowledge required.
 
 ---
-
 
 ## The Problem
 
@@ -25,7 +24,6 @@ Qaphela fills the gap.
 A user recieves a suspicious message and isn't sure if its legitimate. They paste it into Qaphela. Within seconds, the app:
 
 - **Extracts threat signals**: urgency language, brand impersination, requests for personal information, unrealistic prize offers.
-
 - **Checks any URLs** against VirusTotal's threat intelligence database (70+ security vendors)
 - **Calculates a risk score** from weighted signals (0-100)
 - **Generates a plain langauge explaination** via AI, telling the user what was found and what to do next.
@@ -38,10 +36,10 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 
 - **Scam Analyzer** - paste any suspicious message and get an instant risk assesment 
 - **Risk Scoring Engine** - deterministic signal extraction withg weighted scoring
-- **URL Reputation Check** - real threat intelligence via VirusTotal API
-- **AI Explanation Layer** - Groq (LLama 3.1) translates technical findings into plain langauage for non-technical users
+- **AI Explanation Layer** - Groq (GPT-OSS-20B)translates technical findings into plain langauage for non-technical users
 - **Community Scam Feed** - anonymously logged reports building a growning SA-specific threat database
-- **SA-Specific Signal Detection** - patterns tuned to mloacal brands, government entities, and known fraud templates
+- **SA-Specific Signal Detection** - patterns tuned to mloacal brands, government entities, and known fraud template
+- **Privacy-by-Design** — message content is never stored; only analytical metadata is retained
 
 ---
 
@@ -52,12 +50,10 @@ A user recieves a suspicious message and isn't sure if its legitimate. They past
 | Frontend | React(Vite) + Tailwind CSS |
 | Backend | Supabase Edge Functions (Deno) |
 | Database | Supabase (PostgreSQL + RLS) |
-| AI | Groq AI (LLama 3.1-8b-instant)|
-| Threat Intelligence | VirusTotal API |
+| AI | Groq API (GPT-OSS-20B) |
 | Routing | React Router DOM |
 
 ---
-
 
 ## Project Structure
 
@@ -66,59 +62,67 @@ qaphela/
 ├── supabase/
 │   └── functions/
 │       └── analyze-message/
-│           └── index.ts        # Scoring engine + Groq AI call + VirusTotal
+│           └── index.ts        # Scoring engine + Groq AI call
 ├── src/
 │   ├── components/
-│   │   ├── Navbar.jsx
-│   │   ├── RiskBadge.jsx
-│   │   └── SignalList.jsx
+│   │   ├── Navbar.jsx          # Sticky nav with theme toggle
+│   │   ├── RiskBadge.jsx       # Risk level indicator
+│   │   └── SignalList.jsx      # Detected signals with weights
+│   ├── context/
+│   │   └── ThemeContext.jsx    # Light/dark mode context
 │   ├── pages/
 │   │   ├── Analyzer.jsx        # Main analysis page
 │   │   ├── Feed.jsx            # Community scam feed
-│   │   └── About.jsx
+│   │   └── About.jsx           # About + privacy section
 │   ├── lib/
 │   │   └── supabase.js         # Supabase client
 │   └── main.jsx
 ├── .env                        # Local secrets (never committed)
 ├── README.md
-└── package.json
+└── package.
 ```
-
 ---
-
 
 ## Risk Scoring Model
 Qaphela uses a weighted signal system to calculate a risk score between 0 and 100:
 
-| Signal | Weight | 
+| Signal | Weight |
 |---|---|
-| Urgency Language | +20 |
+| Urgency language | +20 |
 | SA brand / government impersonation | +25 |
-| Request for personal or financial information | +30 |
+| Request for personal or financial info | +30 |
 | Unrealistic reward or prize offer | +20 |
-| URL flagged as malicious by VirusTotal | +40 |
 | URL present but not flagged | +5 |
 
 Scores are capped at 100 and categorised as:
 
-- **Low**(0-39): Unlikely to be a scam
-- **Medium**(40-69): Proceed with caution
-- **High**(70-100): Likely a scam, do not engage
+- **Low** (0-39): Unlikely to be a scam
+- **Medium** (40-69): Proceed with caution
+- **High** (70-100): Likely a scam, do not engage
 
 ---
-
 
 ## Cybersecurity Concepts Demonstarted
 
-- **Indicator of Comrpmise (IoC) lookup** via VirusTotal API
-- **Phishing signal detection** - urgency, impersonation, lookalike domains
-- **Social Engineering taxonomy** - authority, urgency, fear, scarcity, reciprocity
-- **Risk scoring model** - weighted, deterministic signal aggregation
-- **Community threat intelligence feed** - anonymous. crowd-sourced scam database
-- **privacy-by-design** - no PII stored, RLS enforced on all database tables
+- **Phishing signal detection** — urgency, impersonation, lookalike domains
+- **Social engineering taxonomy** — authority, urgency, fear, scarcity, reciprocity
+- **Risk scoring model** — weighted, deterministic signal aggregation
+- **Community threat intelligence feed** — anonymized, crowd-sourced scam database
+- **Privacy-by-design** — no message content stored, RLS enforced on all database tables
+- **POPIA compliance** — data minimisation principles applied throughout
 
 ---
 
+## Privacy & Data Handling
+ 
+Qaphela is built with privacy-by-design principles in line with South Africa's POPIA Act:
+ 
+- **Message content is never stored** — analyzed and immediately discarded
+- **No user identification** — no account, login, or personal information required
+- **Anonymised results only** — only risk scores, signal types, and AI explanations are retained
+- **RLS enforced** — all database tables protected with Row Level Security
+
+---
 
 ## Getting Started
 
@@ -191,7 +195,6 @@ npm run dev
 ```
 
 ---
-
 
 ## Disclaimer
 

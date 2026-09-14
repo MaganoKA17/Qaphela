@@ -195,7 +195,7 @@ npm run dev
 
 ## Disclaimer
 
-Qaphela is a portfolio project built for educational purposes. it is not a substitute for professional cyber security advice. If you believe you have been a victim of fraud, contanct your bank immediately and report to the South African Police Service (SAPS) or the South AFrican Banking risk Information Centre (SABRIC).
+Qaphela is a portfolio project built for educational purposes. it is not a substitute for professional cyber security advice. If you believe you have been a victim of fraud, contanct your bank immediately and report to the South African Police Service (SAPS) or the South African Banking Risk Information Centre (SABRIC).
 
 ---
 

@@ -3,25 +3,29 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders })
+    return new Response("ok", { status: 200, headers: corsHeaders })
   }
 
   try {
     const { message } = await req.json()
-    console.log("Message received:", message)
+    console.log("Step 1: Message received")
 
-    // ---- SIGNAL EXTRACTION ----
     const signals = []
     let score = 0
 
     const urgencyPatterns = [
       /urgent/i, /immediately/i, /account.*suspend/i,
-      /verify.*now/i, /24 hours/i, /act now/i, /expires/i
+      /verify.*now/i, /24 hours/i, /act now/i, /expires/i,
+      /will be cancelled/i, /will be suspended/i, /put on hold/i,
+      /account.*hold/i, /payment.*hold/i, /grant.*hold/i,
+      /within.*hours/i, /within.*days/i, /deadline/i
     ]
+
     if (urgencyPatterns.some(p => p.test(message))) {
       signals.push({ type: "urgency_language", label: "Urgency language detected", weight: 20 })
       score += 20
@@ -39,8 +43,12 @@ serve(async (req) => {
 
     const personalInfoPatterns = [
       /id number/i, /password/i, /pin/i, /otp/i,
-      /bank.*detail/i, /account.*number/i, /verify.*identity/i
+      /bank.*detail/i, /account.*number/i, /verify.*identity/i,
+      /update.*info/i, /update.*detail/i, /confirm.*detail/i,
+      /personal.*detail/i, /verify.*account/i, /click.*verify/i,
+      /click.*here/i, /tap.*here/i, /follow.*link/i
     ]
+
     if (personalInfoPatterns.some(p => p.test(message))) {
       signals.push({ type: "personal_info_request", label: "Requests personal or financial information", weight: 30 })
       score += 30
@@ -55,51 +63,25 @@ serve(async (req) => {
       score += 20
     }
 
-    const urlMatch = message.match(/https?:\/\/[^\s]+/)
-    let urlFlag = null
-    if (urlMatch) {
-      const url = urlMatch[0]
-      console.log("URL found:", url)
-      const vtKey = Deno.env.get("VIRUSTOTAL_API_KEY")
-      console.log("VirusTotal key present:", !!vtKey)
-      const encoded = btoa(url).replace(/=+$/, "")
-      const vtRes = await fetch(`https://www.virustotal.com/api/v3/urls/${encoded}`, {
-        headers: { "x-apikey": vtKey }
-      })
-      console.log("VirusTotal status:", vtRes.status)
-      const vtData = await vtRes.json()
-      const malicious = vtData?.data?.attributes?.last_analysis_stats?.malicious ?? 0
-      if (malicious > 0) {
-        signals.push({ type: "malicious_url", label: `URL flagged by ${malicious} security vendors`, weight: 40 })
-        score += 40
-        urlFlag = url
-      } else {
-        signals.push({ type: "url_present", label: "URL present but not flagged", weight: 5 })
-        score += 5
-      }
-    }
-
+    console.log("Step 2: Signals extracted, score:", score)
     score = Math.min(score, 100)
     const riskLevel = score >= 70 ? "high" : score >= 40 ? "medium" : "low"
-    console.log("Score:", score, "Risk level:", riskLevel)
 
+    console.log("Step 3: Calling Groq")
     const groqKey = Deno.env.get("GROQ_API_KEY")
-    console.log("Groq key present:", !!groqKey)
+    const prompt = `You are a cybersecurity assistant that has already analyzed a suspicious message. Do not ask for the message — the analysis is already complete. Write your response based only on the findings below.
 
-    const prompt = `You are a cybersecurity assistant helping everyday South Africans identify scam messages.
-
-A message was analyzed and the following was found:
+Analysis findings:
 - Risk score: ${score}/100
 - Risk level: ${riskLevel}
-- Signals detected: ${signals.map(s => s.label).join(", ") || "none"}
-${urlFlag ? `- A URL was found and flagged as malicious: ${urlFlag}` : ""}
+- Signals detected: ${signals.map(s => s.label).join(", ") || "no suspicious signals found"}
 
-Write a plain-language explanation (3-4 sentences) for a non-technical South African user. Tell them:
-1. Whether this message is likely a scam
-2. What specific red flags were found
-3. What they should do next
+Based on these findings, write exactly 3 sentences in plain language for a non-technical South African user:
+1. State clearly whether this message is likely a scam or safe, based on the risk level
+2. Mention the specific red flags found, or confirm why it appears safe
+3. Tell them exactly what to do next
 
-Do not use technical jargon. Be direct and clear.`
+Do not ask for more information. Do not say "it looks like". Write your response now.`
 
     const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -108,16 +90,22 @@ Do not use technical jargon. Be direct and clear.`
         "Authorization": `Bearer ${groqKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        max_tokens: 300,
+        model: "openai/gpt-oss-20b",
+        max_tokens: 400,
         messages: [{ role: "user", content: prompt }]
       })
     })
 
-    console.log("Groq status:", aiRes.status)
+    console.log("Step 4: Groq status:", aiRes.status)
     const aiData = await aiRes.json()
     console.log("Groq response:", JSON.stringify(aiData))
+
+    if (!aiData.choices || aiData.choices.length === 0) {
+      throw new Error(`Groq error: ${JSON.stringify(aiData)}`)
+    }
+
     const explanation = aiData.choices[0].message.content
+    console.log("Step 5: Done")
 
     return new Response(JSON.stringify({
       score,
@@ -125,11 +113,12 @@ Do not use technical jargon. Be direct and clear.`
       signals,
       explanation
     }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     })
 
   } catch (err) {
-    console.error("Edge function error:", err.message)
+    console.error("Error:", err.message)
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }

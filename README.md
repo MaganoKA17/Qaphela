@@ -9,7 +9,7 @@ Qaphela hels everyday people identify fraudulent WhatsApp and SMS messages befor
 
 ## The Problem
 
-South Africa has one of the highesat rates of digital fraud in the world. WhatsApp is used by over 90% of South Africans with smartphones, amking it the most effective scam distribution channel in th country.
+South Africa has one of the highest rates of digital fraud in the world. WhatsApp is used by over 90% of South Africans with smartphones, making it the most effective scam distribution channel in th country.
 
 Fraudsters impersonate trused institutions, such as SASSA, fnb, Capitec, ABSA, SARS, Takealot, to steal money, credentials, and personal information.
 

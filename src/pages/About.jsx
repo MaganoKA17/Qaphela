@@ -105,6 +105,42 @@ export default function About() {
         </div>
       </section>
 
+    {/* Data & Privacy */}
+<section style={{ marginBottom: '3rem' }}>
+  <h2 style={{
+    fontSize: '12px', fontFamily: 'JetBrains Mono, monospace',
+    color: 'var(--text-muted)', letterSpacing: '0.08em',
+    textTransform: 'uppercase', marginBottom: '1rem',
+    paddingBottom: '0.75rem', borderBottom: '1px solid var(--border)',
+  }}>
+    Data & Privacy
+  </h2>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    {[
+      { icon: '🔒', title: 'Message content is never stored', desc: 'Your message is analyzed and immediately discarded. Only the risk score, signals, and AI explanation are retained.' },
+      { icon: '👤', title: 'No user identification', desc: 'Qaphela requires no account, login, or personal information. Nothing about you is collected or stored.' },
+      { icon: '📊', title: 'Anonymised results only', desc: 'The community scam feed contains only analytical metadata — risk scores, signal types, and AI explanations. No message content, phone numbers, or identifying information.' },
+      { icon: '🇿🇦', title: 'POPIA compliant by design', desc: 'Qaphela applies data minimisation principles in line with South Africa\'s Protection of Personal Information Act. Only the minimum data required to power the community feed is retained.' },
+    ].map((item, i) => (
+      <div key={i} style={{
+        display: 'flex', gap: '14px', alignItems: 'flex-start',
+        padding: '12px 14px',
+        background: 'var(--bg-card)',
+        borderRadius: '8px',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--card-shadow)',
+      }}>
+        <span style={{ fontSize: '16px', flexShrink: 0, marginTop: '1px' }}>{item.icon}</span>
+        <div>
+          <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', margin: '0 0 2px' }}>{item.title}</p>
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>{item.desc}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+
       {/* Footer */}
       <div style={{
         paddingTop: '1.5rem',

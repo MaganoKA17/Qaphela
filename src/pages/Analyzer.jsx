@@ -24,7 +24,6 @@ export default function Analyzer() {
       if (fnError) throw fnError
 
       const { error: insertError } = await supabase.from('scam_reports').insert({
-        message_text: message,
         risk_score: data.score,
         risk_level: data.riskLevel,
         signals: data.signals,
@@ -120,6 +119,31 @@ export default function Analyzer() {
 
       {/* Analyze button */}
       <button
+
+      {/* Consent notice */}
+  <div style={{
+    display: 'flex', alignItems: 'flex-start', gap: '10px',
+    padding: '12px 14px',
+    background: 'var(--accent-dim)',
+    border: '1px solid var(--accent)',
+    borderRadius: '8px',
+    marginBottom: '1rem',
+  }}>
+    <span style={{ fontSize: '14px', flexShrink: 0 }}>🔒</span>
+    <p style={{
+      fontSize: '12px', color: 'var(--text-muted)',
+      margin: 0, lineHeight: 1.6,
+      fontFamily: 'Inter, sans-serif',
+    }}>
+      Your message is analyzed locally and immediately discarded. Only the risk score,
+      detected signals, and AI explanation are stored anonymously — never the message content itself.
+      No personal information is retained.
+    </p>
+  </div>
+
+{/* Analyze button */}
+<button
+
         onClick={analyze}
         disabled={loading || !message.trim()}
         style={{

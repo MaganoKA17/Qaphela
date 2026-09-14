@@ -25,7 +25,6 @@ serve(async (req) => {
       /account.*hold/i, /payment.*hold/i, /grant.*hold/i,
       /within.*hours/i, /within.*days/i, /deadline/i
     ]
-
     if (urgencyPatterns.some(p => p.test(message))) {
       signals.push({ type: "urgency_language", label: "Urgency language detected", weight: 20 })
       score += 20
@@ -48,7 +47,6 @@ serve(async (req) => {
       /personal.*detail/i, /verify.*account/i, /click.*verify/i,
       /click.*here/i, /tap.*here/i, /follow.*link/i
     ]
-
     if (personalInfoPatterns.some(p => p.test(message))) {
       signals.push({ type: "personal_info_request", label: "Requests personal or financial information", weight: 30 })
       score += 30
@@ -64,8 +62,43 @@ serve(async (req) => {
     }
 
     console.log("Step 2: Signals extracted, score:", score)
+
+    const urlMatch = message.match(/https?:\/\/[^\s]+/)
+    let urlFlag = null
+    if (urlMatch) {
+      const url = urlMatch[0]
+      console.log("URL found:", url)
+      try {
+        const vtKey = Deno.env.get("VIRUSTOTAL_API_KEY")
+        const encoded = btoa(url).replace(/=+$/, "")
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 5000)
+        const vtRes = await fetch(`https://www.virustotal.com/api/v3/urls/${encoded}`, {
+          headers: { "x-apikey": vtKey },
+          signal: controller.signal
+        })
+        clearTimeout(timeout)
+        console.log("VirusTotal status:", vtRes.status)
+        const vtData = await vtRes.json()
+        const malicious = vtData?.data?.attributes?.last_analysis_stats?.malicious ?? 0
+        if (malicious > 0) {
+          signals.push({ type: "malicious_url", label: `URL flagged by ${malicious} security vendors`, weight: 40 })
+          score += 40
+          urlFlag = url
+        } else {
+          signals.push({ type: "url_present", label: "URL present but not flagged", weight: 5 })
+          score += 5
+        }
+      } catch (vtErr) {
+        console.error("VirusTotal error:", vtErr.message)
+        signals.push({ type: "url_present", label: "URL present — threat check unavailable", weight: 5 })
+        score += 5
+      }
+    }
+
     score = Math.min(score, 100)
     const riskLevel = score >= 70 ? "high" : score >= 40 ? "medium" : "low"
+    console.log("Score:", score, "Risk level:", riskLevel)
 
     console.log("Step 3: Calling Groq")
     const groqKey = Deno.env.get("GROQ_API_KEY")
@@ -75,6 +108,7 @@ Analysis findings:
 - Risk score: ${score}/100
 - Risk level: ${riskLevel}
 - Signals detected: ${signals.map(s => s.label).join(", ") || "no suspicious signals found"}
+${urlFlag ? `- A URL was found and flagged as malicious: ${urlFlag}` : ""}
 
 Based on these findings, write exactly 3 sentences in plain language for a non-technical South African user:
 1. State clearly whether this message is likely a scam or safe, based on the risk level

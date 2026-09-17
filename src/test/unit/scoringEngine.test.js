@@ -142,3 +142,79 @@ describe('extractSignals — full message scenarios', () => {
         expect(score).toBe(0)
     })
 })
+
+describe('extractSignals — edge cases', () => {
+    it('returns empty signals and zero score for an empty string', () => {
+        const { signals, score, riskLevel } = extractSignals('')
+        expect(signals).toHaveLength(0)
+        expect(score).toBe(0)
+        expect(riskLevel).toBe('low')
+    })
+
+    it('returns empty signals for whitespace only', () => {
+        const { signals, score } = extractSignals('     ')
+        expect(signals).toHaveLength(0)
+        expect(score).toBe(0)
+    })
+
+    it('detects patterns regardless of case — uRgEnT', () => {
+        const { signals } = extractSignals('uRgEnT: your account needs attention')
+        expect(signals.some(s => s.type === 'urgency_language')).toBe(true)
+    })
+
+    it('detects patterns regardless of case — sAsSa', () => {
+        const { signals } = extractSignals('Your sAsSa grant has been approved')
+        expect(signals.some(s => s.type === 'brand_impersonation')).toBe(true)
+    })
+
+    it('handles a very long message without crashing', () => {
+        const longMessage = 'This is a normal message. '.repeat(500)
+        const { signals, score } = extractSignals(longMessage)
+        expect(signals).toHaveLength(0)
+        expect(score).toBe(0)
+    })
+
+    it('handles a message with only numbers', () => {
+        const { signals, score } = extractSignals('1234567890')
+        expect(signals).toHaveLength(0)
+        expect(score).toBe(0)
+    })
+
+    it('handles a message with special characters', () => {
+        const { signals, score } = extractSignals('!@#$%^&*()')
+        expect(signals).toHaveLength(0)
+        expect(score).toBe(0)
+    })
+
+    it('does not double count the same signal type', () => {
+        const { signals } = extractSignals('URGENT act now immediately expires within 24 hours deadline')
+        const urgencySignals = signals.filter(s => s.type === 'urgency_language')
+        expect(urgencySignals).toHaveLength(1)
+    })
+})
+
+describe('getRiskLevel — exact boundary values', () => {
+    it('returns low for score of exactly 39', () => {
+        expect(getRiskLevel(39)).toBe('low')
+    })
+
+    it('returns medium for score of exactly 40', () => {
+        expect(getRiskLevel(40)).toBe('medium')
+    })
+
+    it('returns medium for score of exactly 69', () => {
+        expect(getRiskLevel(69)).toBe('medium')
+    })
+
+    it('returns high for score of exactly 70', () => {
+        expect(getRiskLevel(70)).toBe('high')
+    })
+
+    it('returns high for score of exactly 100', () => {
+        expect(getRiskLevel(100)).toBe('high')
+    })
+
+    it('returns low for score of exactly 0', () => {
+        expect(getRiskLevel(0)).toBe('low')
+    })
+})

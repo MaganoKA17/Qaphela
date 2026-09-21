@@ -38,6 +38,7 @@ A user receives a suspicious message and isn't sure if it's legitimate. They pas
 - **Light & Dark Mode** — auto-detects OS preference with manual override, persisted to localStorage
 - **Privacy-by-Design** — message content is never stored; only analytical metadata is retained
 - **POPIA Compliant** — data minimisation principles applied throughout
+- **TDD Test Suite** — 44 passing tests covering the scoring engine, components, edge cases, and boundary values
 
 ---
 
@@ -51,6 +52,7 @@ A user receives a suspicious message and isn't sure if it's legitimate. They pas
 | AI | Groq API (GPT-OSS-20B) |
 | Threat Intelligence | VirusTotal API |
 | Routing | React Router DOM |
+| Testing | Vitest + Testing Library |
 
 ---
 
@@ -61,25 +63,34 @@ qaphela/
 ├── supabase/
 │   └── functions/
 │       └── analyze-message/
-│           └── index.ts        # Scoring engine + VirusTotal + Groq AI
+│           └── index.ts            # Scoring engine + VirusTotal + Groq AI
 ├── src/
 │   ├── components/
-│   │   ├── Navbar.jsx          # Sticky nav with theme toggle
-│   │   ├── RiskBadge.jsx       # Risk level indicator
-│   │   └── SignalList.jsx      # Detected signals with weights
+│   │   ├── Navbar.jsx              # Sticky nav with theme toggle
+│   │   ├── RiskBadge.jsx           # Risk level indicator
+│   │   └── SignalList.jsx          # Detected signals with weights
 │   ├── context/
-│   │   └── ThemeContext.jsx    # Light/dark mode context
-│   ├── pages/
-│   │   ├── Analyzer.jsx        # Main analysis page
-│   │   ├── Feed.jsx            # Community scam feed with filters
-│   │   └── About.jsx           # About + privacy section
+│   │   └── ThemeContext.jsx        # Light/dark mode context
 │   ├── lib/
-│   │   └── supabase.js         # Supabase client
+│   │   ├── supabase.js             # Supabase client
+│   │   └── scoringEngine.js        # Extracted scoring logic (testable)
+│   ├── pages/
+│   │   ├── Analyzer.jsx            # Main analysis page
+│   │   ├── Feed.jsx                # Community scam feed with filters
+│   │   └── About.jsx               # About + privacy section
+│   ├── test/
+│   │   ├── setup.js                # Vitest setup
+│   │   ├── unit/
+│   │   │   └── scoringEngine.test.js   # 37 scoring engine tests
+│   │   └── components/
+│   │       ├── RiskBadge.test.jsx      # 3 component tests
+│   │       └── SignalList.test.jsx     # 4 component tests
 │   └── main.jsx
-├── .env                        # Local secrets (never committed)
+├── .env                            # Local secrets (never committed)
 ├── README.md
 └── package.json
 ```
+
 
 ---
 
@@ -101,6 +112,30 @@ Scores are capped at 100 and categorised as:
 - **Medium** (40–69) — proceed with caution
 - **High** (70–100) — likely a scam, do not engage
 
+---
+
+
+## Test Suite
+
+Qaphela uses Vitest and Testing Library for unit and component testing.
+
+| Test File | Tests | What it covers |
+|---|---|---|
+| scoringEngine.test.js | 37 | Signal detection, full scenarios, edge cases, boundary values |
+| RiskBadge.test.jsx | 3 | All three risk level labels |
+| SignalList.test.jsx | 4 | Rendering, empty state, item count, point weights |
+| **Total** | **44** | |
+
+Run the test suite:
+```bash
+npm run test:run
+```
+
+Watch mode:
+```bash
+npm run test
+```
+ 
 ---
 
 ## Cybersecurity Concepts Demonstrated
@@ -209,6 +244,11 @@ Qaphela is a portfolio project built for educational purposes. It is not a subst
 ## Author
 
 **Kgosi-E-tsile Magano** 
+
+---
+
+## Verification Code
+WTC-2Y5NS9AS
 
 ---
 

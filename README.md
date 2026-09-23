@@ -234,7 +234,6 @@ npm run dev
 ```
 
 ---
-
 ## Disclaimer
 
 Qaphela is a portfolio project built for educational purposes. It is not a substitute for professional cybersecurity advice. If you believe you have been a victim of fraud, contact your bank immediately and report to the South African Police Service (SAPS) or the South African Banking Risk Information Centre (SABRIC).
@@ -246,7 +245,6 @@ Qaphela is a portfolio project built for educational purposes. It is not a subst
 **Kgosi-E-tsile Magano** 
 
 ---
-
 ## Verification Code
 WTC-2Y5NS9AS
 

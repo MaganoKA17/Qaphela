@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractSignals, getRiskLevel } from '../../lib/scoringEngine.test.js'
+import { extractSignals, getRiskLevel } from '../../lib/scoringEngine.js'
 
 describe('getRiskLevel', () => {
     it('returns low for score below 40', () => {
